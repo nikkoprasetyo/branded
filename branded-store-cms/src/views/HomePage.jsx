@@ -27,6 +27,54 @@ export default function HomePage() {
       setLoading(false);
     }
   }
+  async function handleUpload(e, id) {
+    try {
+      const file = e.target.files[0];
+      if (!file) {
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const { data } = await axios.patch(
+        `${baseUrl}/apis/products/products/${id}`,
+        formData,
+        { headers: { Authorization: `Bearer ${localStorage.access_token}` } }
+      );
+      console.log(data, "ini data");
+      Toastify({
+        text: "Uploaded",
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "bottom", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "#34D399",
+          color: "#000000",
+        },
+      }).showToast();
+    } catch (error) {
+      Toastify({
+        text: "error",
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "bottom", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "#F87171",
+          color: "black",
+          border: "solid #000000",
+          borderRadius: "8px",
+          boxShadow: "2px 2px black",
+        },
+      }).showToast();
+      console.log(error);
+    }
+  }
 
   async function handleDelete(id) {
     try {
@@ -122,6 +170,14 @@ export default function HomePage() {
                       </td>
                       <td className="py-3 px-4 text-center space-x-2">
                         <div className="flex justify-center space-x-2">
+                          <label className="px-3 py-2 text-xs font-medium text-white bg-green-500 rounded-md hover:bg-green-600 transition cursor-pointer">
+                            Add Image
+                            <input
+                              type="file"
+                              className="hidden"
+                              onChange={(e) => handleUpload(e, product.id)}
+                            />
+                          </label>
                           <Link
                             to={`/edit-product/${product.id}`}
                             className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm"
